@@ -91,7 +91,7 @@ export default function SpecScreen() {
             <Text style={styles.title}>{thread.label}</Text>
             <View style={styles.titleMeta}>
               <MetaItem label="MAJOR Ø" value={`${fmt(D)} ${unitLabel}`} />
-              <MetaItem label={isUnified ? 'TPI' : 'PITCH'} value={isUnified ? `${thread.tpi}` : `${P} mm`} />
+              <MetaItem label={isUnified ? 'TPI' : 'PITCH'} value={isUnified ? `${thread.tpi}` : `${P % 1 === 0 ? P.toFixed(1) : P} mm`} />
               <MetaItem label={isUnified ? 'PITCH' : 'TPI'} value={isUnified ? `${fmt(P)} in` : `${thread.tpi.toFixed(2)}`} />
             </View>
           </View>

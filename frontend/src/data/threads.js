@@ -115,10 +115,15 @@ export const UNIFIED_THREADS = [
 const SERIES_ORDER = ['Coarse', 'Fine', 'Extra Fine', 'Super Fine'];
 const SERIES_RANK = { Coarse: 0, Fine: 1, 'Extra Fine': 2, 'Super Fine': 3 };
 
+// Format pitch with at least 1 decimal place: 1 -> "1.0", 2.5 -> "2.5", 1.25 -> "1.25"
+function fmtPitch(p) {
+  return p % 1 === 0 ? p.toFixed(1) : p.toString();
+}
+
 const m = (dia, pitch, type) => ({
   id: `M${dia}x${pitch}`,
   system: 'metric',
-  label: `M${dia} × ${pitch}`,
+  label: `M${dia} × ${fmtPitch(pitch)}`,
   diameter: dia,
   pitch,
   tpi: 25.4 / pitch,
