@@ -50,7 +50,7 @@ export default function Home() {
           <View style={styles.cardLeft}>
             <Text style={styles.cardKicker}>MM · ISO 261/262</Text>
             <Text style={styles.cardTitle}>METRIC</Text>
-            <Text style={styles.cardDesc}>Coarse · Fine · Super Fine</Text>
+            <Text style={styles.cardDesc}>Coarse · Fine · Extra Fine · Super Fine</Text>
             <Text style={styles.cardRange}>M1 to M25</Text>
           </View>
           <View style={styles.cardArrow}>

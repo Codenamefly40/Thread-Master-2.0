@@ -107,87 +107,85 @@ export const UNIFIED_THREADS = [
   u('1-20 UNEF', 1.0, 20, 'UNEF', 1.0003),
 ].sort((a, b) => a.sortKey - b.sortKey);
 
-// Metric threads - Coarse, Fine, Super Fine (per ISO 261/262)
+// Metric threads - Coarse, Fine, Extra Fine, Super Fine (per ISO 261/262)
+// Convention: for each diameter the pitches listed largest→smallest map to:
+//   1st = Coarse, 2nd = Fine, 3rd = Extra Fine, remainder = Super Fine.
+//   If the diameter has no Coarse listing in the standard, the largest
+//   remaining pitch is treated as Fine.
+const SERIES_ORDER = ['Coarse', 'Fine', 'Extra Fine', 'Super Fine'];
+const SERIES_RANK = { Coarse: 0, Fine: 1, 'Extra Fine': 2, 'Super Fine': 3 };
+
 const m = (dia, pitch, type) => ({
   id: `M${dia}x${pitch}`,
   system: 'metric',
   label: `M${dia} × ${pitch}`,
-  diameter: dia,         // mm
-  pitch,                 // mm
+  diameter: dia,
+  pitch,
   tpi: 25.4 / pitch,
-  series: type,          // 'Coarse' | 'Fine' | 'Super Fine'
-  sortKey: dia + (type === 'Coarse' ? 0 : type === 'Fine' ? 0.001 : 0.002) + pitch * 0.0001,
+  series: type,
+  sortKey: dia + SERIES_RANK[type] * 0.0001 + pitch * 0.000001,
 });
 
-export const METRIC_THREADS = [
-  m(1, 0.25, 'Coarse'),
-  m(1.2, 0.25, 'Coarse'),
-  m(1.4, 0.3, 'Coarse'),
-  m(1.6, 0.35, 'Coarse'),
-  m(1.8, 0.35, 'Coarse'),
-  m(2, 0.4, 'Coarse'),
-  m(2, 0.25, 'Fine'),
-  m(2.5, 0.45, 'Coarse'),
-  m(2.5, 0.35, 'Fine'),
-  m(3, 0.5, 'Coarse'),
-  m(3, 0.35, 'Fine'),
-  m(3.5, 0.6, 'Coarse'),
-  m(3.5, 0.35, 'Fine'),
-  m(4, 0.7, 'Coarse'),
-  m(4, 0.5, 'Fine'),
-  m(5, 0.8, 'Coarse'),
-  m(5, 0.5, 'Fine'),
-  m(6, 1.0, 'Coarse'),
-  m(6, 0.75, 'Fine'),
-  m(6, 0.5, 'Super Fine'),
-  m(7, 1.0, 'Coarse'),
-  m(7, 0.75, 'Fine'),
-  m(8, 1.25, 'Coarse'),
-  m(8, 1.0, 'Fine'),
-  m(8, 0.75, 'Super Fine'),
-  m(9, 1.25, 'Fine'),
-  m(9, 1.0, 'Super Fine'),
-  m(10, 1.5, 'Coarse'),
-  m(10, 1.25, 'Fine'),
-  m(10, 1.0, 'Super Fine'),
-  m(10, 0.75, 'Super Fine'),
-  m(11, 1.5, 'Fine'),
-  m(11, 1.0, 'Super Fine'),
-  m(12, 1.75, 'Coarse'),
-  m(12, 1.5, 'Fine'),
-  m(12, 1.25, 'Super Fine'),
-  m(12, 1.0, 'Super Fine'),
-  m(14, 2.0, 'Coarse'),
-  m(14, 1.5, 'Fine'),
-  m(14, 1.25, 'Super Fine'),
-  m(14, 1.0, 'Super Fine'),
-  m(15, 1.5, 'Fine'),
-  m(15, 1.0, 'Super Fine'),
-  m(16, 2.0, 'Coarse'),
-  m(16, 1.5, 'Fine'),
-  m(16, 1.0, 'Super Fine'),
-  m(17, 1.5, 'Fine'),
-  m(17, 1.0, 'Super Fine'),
-  m(18, 2.5, 'Coarse'),
-  m(18, 2.0, 'Fine'),
-  m(18, 1.5, 'Super Fine'),
-  m(18, 1.0, 'Super Fine'),
-  m(20, 2.5, 'Coarse'),
-  m(20, 2.0, 'Fine'),
-  m(20, 1.5, 'Super Fine'),
-  m(20, 1.0, 'Super Fine'),
-  m(22, 2.5, 'Coarse'),
-  m(22, 2.0, 'Fine'),
-  m(22, 1.5, 'Super Fine'),
-  m(22, 1.0, 'Super Fine'),
-  m(24, 3.0, 'Coarse'),
-  m(24, 2.0, 'Fine'),
-  m(24, 1.5, 'Super Fine'),
-  m(24, 1.0, 'Super Fine'),
-  m(25, 2.0, 'Fine'),
-  m(25, 1.5, 'Super Fine'),
-  m(25, 1.0, 'Super Fine'),
-].sort((a, b) => a.sortKey - b.sortKey);
+// dia -> { coarse: pitch | null, pitches: pitch[] (largest→smallest, all available) }
+const METRIC_TABLE = [
+  { d: 1,    coarse: 0.25, others: [] },
+  { d: 1.1,  coarse: 0.25, others: [] },
+  { d: 1.2,  coarse: 0.25, others: [] },
+  { d: 1.4,  coarse: 0.30, others: [] },
+  { d: 1.6,  coarse: 0.35, others: [0.20] },
+  { d: 1.8,  coarse: 0.35, others: [0.20] },
+  { d: 2,    coarse: 0.40, others: [0.25] },
+  { d: 2.2,  coarse: 0.45, others: [0.25] },
+  { d: 2.5,  coarse: 0.45, others: [0.35] },
+  { d: 3,    coarse: 0.50, others: [0.35] },
+  { d: 3.5,  coarse: 0.60, others: [0.35] },
+  { d: 4,    coarse: 0.70, others: [0.50] },
+  { d: 4.5,  coarse: 0.75, others: [0.50] },
+  { d: 5,    coarse: 0.80, others: [0.50] },
+  { d: 5.5,  coarse: null, others: [0.50] },
+  { d: 6,    coarse: 1.00, others: [0.75, 0.50] },
+  { d: 7,    coarse: 1.00, others: [0.75, 0.50] },
+  { d: 8,    coarse: 1.25, others: [1.00, 0.75, 0.50] },
+  { d: 9,    coarse: null, others: [1.25, 1.00, 0.75, 0.50] },
+  { d: 10,   coarse: 1.50, others: [1.25, 1.00, 0.75, 0.50] },
+  { d: 11,   coarse: null, others: [1.50, 1.00, 0.75, 0.50] },
+  { d: 12,   coarse: 1.75, others: [1.50, 1.25, 1.00, 0.75, 0.50] },
+  { d: 14,   coarse: 2.00, others: [1.50, 1.25, 1.00] },
+  { d: 15,   coarse: null, others: [1.50, 1.00] },
+  { d: 16,   coarse: 2.00, others: [1.50, 1.00] },
+  { d: 17,   coarse: null, others: [1.50, 1.00] },
+  { d: 18,   coarse: 2.50, others: [2.00, 1.50, 1.00] },
+  { d: 20,   coarse: 2.50, others: [2.00, 1.50, 1.00] },
+  { d: 22,   coarse: 2.50, others: [2.00, 1.50, 1.00] },
+  { d: 24,   coarse: 3.00, others: [2.00, 1.50, 1.00] },
+  { d: 25,   coarse: null, others: [2.00, 1.50, 1.00] },
+];
+
+function expandMetricRow(row) {
+  // pitches sorted coarse(largest) → super fine(smallest)
+  const all = row.coarse !== null ? [row.coarse, ...row.others] : [...row.others];
+  // Ensure descending
+  all.sort((a, b) => b - a);
+
+  const tagged = [];
+  let idx = 0;
+  if (row.coarse !== null) {
+    tagged.push({ d: row.d, pitch: row.coarse, type: 'Coarse' });
+    idx = 1;
+  }
+  // remaining pitches (descending) -> Fine, Extra Fine, Super Fine, Super Fine, ...
+  const remaining = all.slice(idx);
+  remaining.forEach((p, i) => {
+    const type = SERIES_ORDER[Math.min(i + 1, 3)];
+    tagged.push({ d: row.d, pitch: p, type });
+  });
+  return tagged;
+}
+
+export const METRIC_THREADS = METRIC_TABLE
+  .flatMap(expandMetricRow)
+  .map(({ d, pitch, type }) => m(d, pitch, type))
+  .sort((a, b) => a.sortKey - b.sortKey);
 
 export function getThreadById(id) {
   return UNIFIED_THREADS.find(t => t.id === id) || METRIC_THREADS.find(t => t.id === id);
