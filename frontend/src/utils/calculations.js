@@ -142,10 +142,19 @@ export function tapDrill(D, P, percent, type) {
 }
 
 // 3-wire measurement (60° threads)
-// Best wire = 0.57735 × P
+// Best wire = 0.57735 × P (touches at the pitch line)
+// Acceptable range per ASME B1.2 / Machinery's Handbook:
+//   Min usable wire = 0.560 × P (rides slightly above pitch line)
+//   Max usable wire = 0.900 × P (still below the major dia crest)
 // M = E + 3W − 1.5155 × P    where E = pitch dia, W = wire size, P = pitch
 export function bestWireSize(P) {
   return 0.57735 * P;
+}
+export function minWireSize(P) {
+  return 0.560 * P;
+}
+export function maxWireSize(P) {
+  return 0.900 * P;
 }
 export function threeWireM(E, W, P) {
   return E + 3 * W - 1.5155 * P;

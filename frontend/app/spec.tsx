@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getThreadById } from '../src/data/threads';
 import {
   basicDimensions, classLimits, classesFor, tapDrill, bestWireSize,
-  threeWireM, closestDrill, fmtIn, fmtMm, INCH_TO_MM,
+  minWireSize, maxWireSize, threeWireM, closestDrill, fmtIn, fmtMm, INCH_TO_MM,
 } from '../src/utils/calculations';
 
 const PERCENTS = [50, 55, 60, 65, 70, 75];
@@ -54,10 +54,12 @@ export default function SpecScreen() {
   // 3-wire calc - use class pitch dia max as E (for 2A this is at allowance line)
   const E = limits.kind === 'external' ? limits.pdMax : limits.pdMin;
   const bestW = bestWireSize(P);
-  const usedW = (() => {
-    const v = parseFloat(wireInput);
-    return isFinite(v) && v > 0 ? v : bestW;
-  })();
+  const minW = minWireSize(P);
+  const maxW = maxWireSize(P);
+  const parsedW = parseFloat(wireInput);
+  const wireEntered = isFinite(parsedW) && parsedW > 0;
+  const usedW = wireEntered ? parsedW : bestW;
+  const wireOutOfRange = wireEntered && (usedW < minW || usedW > maxW);
   // For metric, wire input might be in mm; treat consistent with thread system unit
   const measureMax = limits.kind === 'external'
     ? threeWireM(limits.pdMax, usedW, P)
@@ -238,10 +240,43 @@ export default function SpecScreen() {
                       placeholder={fmt(bestW)}
                       placeholderTextColor="#6B7280"
                       keyboardType="decimal-pad"
-                      style={styles.wireInput}
+                      style={[styles.wireInput, wireOutOfRange && styles.wireInputError]}
                     />
                   </View>
                 </View>
+
+                <View style={styles.rangeBox} testID="wire-range">
+                  <View style={styles.rangeRow}>
+                    <Text style={styles.rangeLabel}>ACCEPTABLE RANGE</Text>
+                    <Text style={styles.rangeFormula}>0.560·P  →  0.900·P</Text>
+                  </View>
+                  <View style={styles.rangeValuesRow}>
+                    <View style={styles.rangeCol}>
+                      <Text style={styles.rangeColLabel}>MIN</Text>
+                      <Text style={styles.rangeColValue}>{fmt(minW)}</Text>
+                      <Text style={styles.rangeColAlt}>{fmtAlt(minW)} {altUnit}</Text>
+                    </View>
+                    <View style={styles.rangeCol}>
+                      <Text style={styles.rangeColLabel}>BEST</Text>
+                      <Text style={[styles.rangeColValue, { color: '#FFB000' }]}>{fmt(bestW)}</Text>
+                      <Text style={styles.rangeColAlt}>{fmtAlt(bestW)} {altUnit}</Text>
+                    </View>
+                    <View style={styles.rangeCol}>
+                      <Text style={styles.rangeColLabel}>MAX</Text>
+                      <Text style={styles.rangeColValue}>{fmt(maxW)}</Text>
+                      <Text style={styles.rangeColAlt}>{fmtAlt(maxW)} {altUnit}</Text>
+                    </View>
+                  </View>
+                  {wireOutOfRange && (
+                    <View style={styles.warnRow} testID="wire-warning">
+                      <Ionicons name="warning" size={14} color="#FF3B30" />
+                      <Text style={styles.warnText}>
+                        Wire Ø {fmt(usedW)} {unitLabel} is outside the acceptable range.
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
                 <Pressable
                   testID="use-best-wire"
                   onPress={() => setWireInput(fmt(bestW))}
@@ -456,6 +491,24 @@ const styles = StyleSheet.create({
     borderRadius: 4, paddingHorizontal: 12, height: 48, color: '#F3F4F6',
     fontFamily: 'monospace', fontSize: 18, fontWeight: '700',
   },
+  wireInputError: { borderColor: '#FF3B30' },
+  rangeBox: {
+    marginTop: 14, backgroundColor: '#0A0A0A', borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)', borderRadius: 4, padding: 12,
+  },
+  rangeRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  rangeLabel: { color: '#9CA3AF', fontSize: 10, letterSpacing: 1.2, fontWeight: '700' },
+  rangeFormula: { color: '#6B7280', fontSize: 11, fontFamily: 'monospace' },
+  rangeValuesRow: { flexDirection: 'row', gap: 8 },
+  rangeCol: {
+    flex: 1, backgroundColor: '#171717', borderRadius: 4,
+    paddingVertical: 8, paddingHorizontal: 6, alignItems: 'center',
+  },
+  rangeColLabel: { color: '#9CA3AF', fontSize: 9, letterSpacing: 1, fontWeight: '700' },
+  rangeColValue: { color: '#F3F4F6', fontSize: 14, fontFamily: 'monospace', fontWeight: '700', marginTop: 4 },
+  rangeColAlt: { color: '#6B7280', fontSize: 10, fontFamily: 'monospace', marginTop: 1 },
+  warnRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10 },
+  warnText: { color: '#FF3B30', fontSize: 12, fontWeight: '600' },
   linkBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8, alignSelf: 'flex-end' },
   linkText: { color: '#FFB000', fontSize: 12, fontWeight: '700' },
 
