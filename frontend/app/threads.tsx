@@ -1,0 +1,134 @@
+import { useMemo, useState } from 'react';
+import { Text, View, StyleSheet, TextInput, FlatList, Pressable } from 'react-native';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { getThreadsBySystem } from '../src/data/threads';
+
+export default function ThreadsList() {
+  const { system } = useLocalSearchParams<{ system: 'unified' | 'metric' }>();
+  const router = useRouter();
+  const [query, setQuery] = useState('');
+  const sys = system === 'metric' ? 'metric' : 'unified';
+
+  const all = useMemo(() => getThreadsBySystem(sys), [sys]);
+
+  const filtered = useMemo(() => {
+    if (!query.trim()) return all;
+    const q = query.toLowerCase().replace(/\s+/g, '');
+    return all.filter((t) => {
+      const lab = t.label.toLowerCase().replace(/\s+/g, '');
+      return lab.includes(q) || t.series.toLowerCase().includes(q);
+    });
+  }, [all, query]);
+
+  const headerTitle = sys === 'unified' ? 'UNIFIED THREADS' : 'METRIC THREADS';
+  const headerSub = sys === 'unified' ? 'INCH · ASME B1.1' : 'MM · ISO 261/262';
+
+  return (
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <Stack.Screen options={{ title: sys === 'unified' ? 'Unified' : 'Metric' }} />
+
+      <View style={styles.headerBlock}>
+        <Text style={styles.kicker}>{headerSub}</Text>
+        <Text style={styles.title}>{headerTitle}</Text>
+        <Text style={styles.count}>{filtered.length} of {all.length} sizes</Text>
+      </View>
+
+      <View style={styles.searchWrap}>
+        <Ionicons name="search" size={18} color="#9CA3AF" style={styles.searchIcon} />
+        <TextInput
+          testID="search-input"
+          placeholder={sys === 'unified' ? 'Search e.g. 1/4-20, #6, UNF' : 'Search e.g. M6, 1.5, Fine'}
+          placeholderTextColor="#6B7280"
+          value={query}
+          onChangeText={setQuery}
+          style={styles.search}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+        {query.length > 0 && (
+          <Pressable testID="clear-search" onPress={() => setQuery('')} style={styles.clearBtn} hitSlop={10}>
+            <Ionicons name="close-circle" size={20} color="#9CA3AF" />
+          </Pressable>
+        )}
+      </View>
+
+      <FlatList
+        data={filtered}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingBottom: 24 }}
+        ItemSeparatorComponent={() => <View style={styles.sep} />}
+        renderItem={({ item }) => (
+          <Pressable
+            testID={`thread-list-item-${item.id}`}
+            style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+            onPress={() => router.push({ pathname: '/spec', params: { id: item.id } })}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={styles.rowTitle}>{item.label}</Text>
+              <View style={styles.rowMeta}>
+                <Text style={styles.rowMetaText}>{item.series}</Text>
+                <View style={styles.dot} />
+                <Text style={styles.rowMetaText}>
+                  {sys === 'unified'
+                    ? `${item.tpi} TPI`
+                    : `${item.pitch.toFixed(2)} mm pitch`}
+                </Text>
+                <View style={styles.dot} />
+                <Text style={styles.rowMetaText}>
+                  Ø {sys === 'unified' ? item.diameter.toFixed(4) + '"' : item.diameter + ' mm'}
+                </Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#FFB000" />
+          </Pressable>
+        )}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <Ionicons name="search" size={32} color="#6B7280" />
+            <Text style={styles.emptyText}>No threads match &quot;{query}&quot;</Text>
+          </View>
+        }
+      />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#0A0A0A' },
+  headerBlock: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 4 },
+  kicker: { color: '#FFB000', fontSize: 11, letterSpacing: 1.5, fontWeight: '700' },
+  title: { color: '#F3F4F6', fontSize: 26, fontWeight: '800', letterSpacing: 0.5, marginTop: 4 },
+  count: { color: '#9CA3AF', fontSize: 12, marginTop: 4, fontFamily: 'monospace' },
+  searchWrap: { paddingHorizontal: 20, marginTop: 12, marginBottom: 8, position: 'relative' },
+  searchIcon: { position: 'absolute', left: 32, top: 18, zIndex: 2 },
+  search: {
+    backgroundColor: '#171717',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 6,
+    paddingLeft: 44,
+    paddingRight: 44,
+    height: 56,
+    color: '#F3F4F6',
+    fontSize: 16,
+    fontFamily: 'monospace',
+  },
+  clearBtn: { position: 'absolute', right: 30, top: 18 },
+  sep: { height: 1, backgroundColor: 'rgba(255,255,255,0.08)' },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    minHeight: 72,
+  },
+  rowPressed: { backgroundColor: '#171717' },
+  rowTitle: { color: '#F3F4F6', fontSize: 18, fontWeight: '700', fontFamily: 'monospace' },
+  rowMeta: { flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 8, flexWrap: 'wrap' },
+  rowMetaText: { color: '#9CA3AF', fontSize: 12, fontFamily: 'monospace' },
+  dot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: '#4B5563' },
+  empty: { alignItems: 'center', paddingTop: 60, gap: 12 },
+  emptyText: { color: '#9CA3AF', fontSize: 14 },
+});
