@@ -128,7 +128,7 @@ const m = (dia, pitch, type) => ({
   pitch,
   tpi: 25.4 / pitch,
   series: type,
-  sortKey: dia + SERIES_RANK[type] * 0.0001 + pitch * 0.000001,
+  sortKey: dia + SERIES_RANK[type] * 0.001 - pitch * 0.000001,
 });
 
 // dia -> { coarse: pitch | null, pitches: pitch[] (largest→smallest, all available) }
