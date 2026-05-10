@@ -192,10 +192,39 @@ export const METRIC_THREADS = METRIC_TABLE
   .map(({ d, pitch, type }) => m(d, pitch, type))
   .sort((a, b) => a.sortKey - b.sortKey);
 
+// NPT - National Pipe Thread (Tapered, ANSI/ASME B1.20.1)
+// Sizes ≤ 1" only. NPT has no class system; specs are absolute.
+// Tap drill listed per standard reference.
+const npt = (label, od, tpi, tapDrillName, tapDrillSize, sortKey) => ({
+  id: `NPT-${label}`,
+  system: 'npt',
+  label: `${label} NPT`,
+  diameter: od,
+  pitch: 1 / tpi,
+  tpi,
+  series: 'NPT',
+  tapDrill: { name: tapDrillName, size: tapDrillSize },
+  sortKey,
+});
+
+export const NPT_THREADS = [
+  npt('1/16-27', 0.3125, 27, 'D / 15/64', 0.2344, 0.0625),
+  npt('1/8-27',  0.4050, 27, 'R / 11/32', 0.3390, 0.1250),
+  npt('1/4-18',  0.5400, 18, '7/16',      0.4375, 0.2500),
+  npt('3/8-18',  0.6750, 18, '37/64',     0.5781, 0.3750),
+  npt('1/2-14',  0.8400, 14, '23/32',     0.7188, 0.5000),
+  npt('3/4-14',  1.0500, 14, '59/64',     0.9219, 0.7500),
+  npt('1-11.5',  1.3150, 11.5, '1-5/32',  1.1563, 1.0000),
+].sort((a, b) => a.sortKey - b.sortKey);
+
 export function getThreadById(id) {
-  return UNIFIED_THREADS.find(t => t.id === id) || METRIC_THREADS.find(t => t.id === id);
+  return UNIFIED_THREADS.find(t => t.id === id)
+    || METRIC_THREADS.find(t => t.id === id)
+    || NPT_THREADS.find(t => t.id === id);
 }
 
 export function getThreadsBySystem(system) {
-  return system === 'unified' ? UNIFIED_THREADS : METRIC_THREADS;
+  if (system === 'metric') return METRIC_THREADS;
+  if (system === 'npt') return NPT_THREADS;
+  return UNIFIED_THREADS;
 }

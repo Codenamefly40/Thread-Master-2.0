@@ -35,6 +35,63 @@ export default function SpecScreen() {
     );
   }
 
+  // Simplified NPT view (no class system, fixed tap drill per standard)
+  if (thread.system === 'npt') {
+    const npt = thread as any;
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <Stack.Screen options={{ title: thread.label }} />
+        <ScrollView contentContainerStyle={styles.scroll}>
+          <View style={styles.titleBlock}>
+            <Text style={styles.kicker}>PIPE · ASME B1.20.1 · TAPERED</Text>
+            <Text style={styles.title}>{thread.label}</Text>
+            <View style={styles.titleMeta}>
+              <MetaItem label="OD" value={`${thread.diameter.toFixed(4)} in`} />
+              <MetaItem label="TPI" value={`${thread.tpi}`} />
+              <MetaItem label="PITCH" value={`${thread.pitch.toFixed(4)} in`} />
+            </View>
+          </View>
+
+          <SectionLabel text="Specifications" />
+          <View style={styles.specCard}>
+            <SpecRow label="Outside Dia (OD)" v={thread.diameter} fmt={(n) => fmtIn(n, 4)}
+              alt={fmtMm(thread.diameter * INCH_TO_MM, 3)} unit="in" altUnit="mm" />
+            <Divider />
+            <SpecRow label="Threads / Inch" v={thread.tpi} fmt={(n) => n.toString()}
+              alt="—" unit="TPI" altUnit="" />
+            <SpecRow label="Pitch" v={thread.pitch} fmt={(n) => fmtIn(n, 4)}
+              alt={fmtMm(thread.pitch * INCH_TO_MM, 3)} unit="in" altUnit="mm" />
+            <Divider />
+            <SpecRow label="Taper" v={0.0625} fmt={() => '1:16 (0.0625"/in)'}
+              alt="3/4 in/ft" unit="" altUnit="" />
+          </View>
+
+          <SectionLabel text="Tap Drill (Internal Thread)" />
+          <View style={styles.specCard}>
+            <View style={styles.resultBox} testID="npt-tap-drill">
+              <Text style={styles.resultLabel}>STANDARD TAP DRILL</Text>
+              <Text style={styles.resultValue}>
+                {npt.tapDrill.size.toFixed(4)} <Text style={styles.resultUnit}>in</Text>
+              </Text>
+              <Text style={styles.resultAlt}>
+                {fmtMm(npt.tapDrill.size * INCH_TO_MM, 3)} mm
+              </Text>
+              <View style={styles.closestRow}>
+                <Ionicons name="checkmark-circle" size={16} color="#00E676" />
+                <Text style={styles.closestText}>
+                  Drill name: <Text style={styles.closestStrong}>{npt.tapDrill.name}</Text>
+                </Text>
+              </View>
+              <Text style={styles.resultFooter}>
+                Per ASME B1.20.1 — without reamer, for general-purpose threading.
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   const isUnified = thread.system === 'unified';
   const D = thread.diameter;
   const P = thread.pitch;

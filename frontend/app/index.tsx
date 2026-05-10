@@ -58,6 +58,22 @@ export default function Home() {
           </View>
         </Pressable>
 
+        <Pressable
+          testID="system-select-npt"
+          style={({ pressed }) => [styles.bigCard, pressed && styles.cardPressed]}
+          onPress={() => router.push({ pathname: '/threads', params: { system: 'npt' } })}
+        >
+          <View style={styles.cardLeft}>
+            <Text style={styles.cardKicker}>PIPE · ASME B1.20.1</Text>
+            <Text style={styles.cardTitle}>NPT</Text>
+            <Text style={styles.cardDesc}>Tapered National Pipe Thread</Text>
+            <Text style={styles.cardRange}>1/16 to 1&quot;</Text>
+          </View>
+          <View style={styles.cardArrow}>
+            <Ionicons name="chevron-forward" size={32} color="#FFB000" />
+          </View>
+        </Pressable>
+
         <View style={styles.featureRow}>
           <FeatureCell icon="calculator" label="TAP DRILL" />
           <FeatureCell icon="resize" label="3-WIRE" />

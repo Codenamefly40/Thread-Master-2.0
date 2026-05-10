@@ -6,10 +6,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { getThreadsBySystem } from '../src/data/threads';
 
 export default function ThreadsList() {
-  const { system } = useLocalSearchParams<{ system: 'unified' | 'metric' }>();
+  const { system } = useLocalSearchParams<{ system: 'unified' | 'metric' | 'npt' }>();
   const router = useRouter();
   const [query, setQuery] = useState('');
-  const sys = system === 'metric' ? 'metric' : 'unified';
+  const sys = system === 'metric' ? 'metric' : system === 'npt' ? 'npt' : 'unified';
 
   const all = useMemo(() => getThreadsBySystem(sys), [sys]);
 
@@ -22,12 +22,17 @@ export default function ThreadsList() {
     });
   }, [all, query]);
 
-  const headerTitle = sys === 'unified' ? 'UNIFIED THREADS' : 'METRIC THREADS';
-  const headerSub = sys === 'unified' ? 'INCH · ASME B1.1' : 'MM · ISO 261/262';
+  const titleMap = {
+    unified: { title: 'UNIFIED THREADS', sub: 'INCH · ASME B1.1', screen: 'Unified', placeholder: 'Search e.g. 1/4-20, #6, UNF' },
+    metric:  { title: 'METRIC THREADS',  sub: 'MM · ISO 261/262', screen: 'Metric',  placeholder: 'Search e.g. M6, 1.5, Fine' },
+    npt:     { title: 'NPT THREADS',     sub: 'PIPE · ASME B1.20.1', screen: 'NPT',  placeholder: 'Search e.g. 1/4, 3/8, 1/2' },
+  } as const;
+  const headerTitle = titleMap[sys].title;
+  const headerSub = titleMap[sys].sub;
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <Stack.Screen options={{ title: sys === 'unified' ? 'Unified' : 'Metric' }} />
+      <Stack.Screen options={{ title: titleMap[sys].screen }} />
 
       <View style={styles.headerBlock}>
         <Text style={styles.kicker}>{headerSub}</Text>
@@ -71,13 +76,13 @@ export default function ThreadsList() {
                 <Text style={styles.rowMetaText}>{item.series}</Text>
                 <View style={styles.dot} />
                 <Text style={styles.rowMetaText}>
-                  {sys === 'unified'
+                  {sys === 'unified' || sys === 'npt'
                     ? `${item.tpi} TPI`
                     : `${item.pitch.toFixed(2)} mm pitch`}
                 </Text>
                 <View style={styles.dot} />
                 <Text style={styles.rowMetaText}>
-                  Ø {sys === 'unified' ? item.diameter.toFixed(4) + '"' : item.diameter + ' mm'}
+                  {sys === 'metric' ? `Ø ${item.diameter} mm` : `Ø ${item.diameter.toFixed(4)}"`}
                 </Text>
               </View>
             </View>
