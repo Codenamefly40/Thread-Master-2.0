@@ -35,15 +35,21 @@ export default function SpecScreen() {
     );
   }
 
-  // Simplified NPT view (no class system, fixed tap drill per standard)
-  if (thread.system === 'npt') {
+  // Simplified pipe-thread view (NPT or NPTF — no class system)
+  if (thread.system === 'npt' || thread.system === 'nptf') {
     const npt = thread as any;
+    const isNPTF = thread.system === 'nptf';
+    const standardLabel = isNPTF ? 'DRYSEAL · ASME B1.20.3' : 'PIPE · ASME B1.20.1';
+    const tapDrillLabel = isNPTF ? 'NPTF DRYSEAL TAP DRILL' : 'STANDARD NPT TAP DRILL';
+    const tapDrillFooter = isNPTF
+      ? 'Per ASME B1.20.3 (Dryseal) — for sealing pipe joints without thread sealant.'
+      : 'Per ASME B1.20.1 — without reamer, for general-purpose threading.';
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <Stack.Screen options={{ title: thread.label }} />
         <ScrollView contentContainerStyle={styles.scroll}>
           <View style={styles.titleBlock}>
-            <Text style={styles.kicker}>PIPE · ASME B1.20.1 · TAPERED</Text>
+            <Text style={styles.kicker}>{standardLabel} · TAPERED</Text>
             <Text style={styles.title}>{thread.label}</Text>
             <View style={styles.titleMeta}>
               <MetaItem label="OD" value={`${thread.diameter.toFixed(4)} in`} />
@@ -66,15 +72,31 @@ export default function SpecScreen() {
               alt="3/4 in/ft" unit="" altUnit="" />
           </View>
 
+          <SectionLabel text="Engagement Lengths" />
+          <View style={styles.specCard}>
+            <View style={styles.engRow}>
+              <Text style={styles.engLabel}>L1 — Hand-Tight Engagement</Text>
+              <Text style={styles.engValue}>{npt.L1.toFixed(4)} <Text style={styles.engUnit}>in</Text></Text>
+            </View>
+            <Text style={styles.engHint}>
+              Distance the external thread enters the internal thread by hand.
+            </Text>
+            <Divider />
+            <View style={styles.engRow}>
+              <Text style={styles.engLabel}>L2 — Effective Thread Length</Text>
+              <Text style={styles.engValue}>{npt.L2.toFixed(4)} <Text style={styles.engUnit}>in</Text></Text>
+            </View>
+            <Text style={styles.engHint}>
+              Total length of usable, fully-formed external thread.
+            </Text>
+          </View>
+
           <SectionLabel text="Tap Drill (Internal Thread)" />
           <View style={styles.specCard}>
             <View style={styles.resultBox} testID="npt-tap-drill">
-              <Text style={styles.resultLabel}>STANDARD TAP DRILL</Text>
+              <Text style={styles.resultLabel}>{tapDrillLabel}</Text>
               <Text style={styles.resultValue}>
                 {npt.tapDrill.size.toFixed(4)} <Text style={styles.resultUnit}>in</Text>
-              </Text>
-              <Text style={styles.resultAlt}>
-                {fmtMm(npt.tapDrill.size * INCH_TO_MM, 3)} mm
               </Text>
               <View style={styles.closestRow}>
                 <Ionicons name="checkmark-circle" size={16} color="#00E676" />
@@ -82,9 +104,7 @@ export default function SpecScreen() {
                   Drill name: <Text style={styles.closestStrong}>{npt.tapDrill.name}</Text>
                 </Text>
               </View>
-              <Text style={styles.resultFooter}>
-                Per ASME B1.20.1 — without reamer, for general-purpose threading.
-              </Text>
+              <Text style={styles.resultFooter}>{tapDrillFooter}</Text>
             </View>
           </View>
         </ScrollView>
@@ -574,4 +594,10 @@ const styles = StyleSheet.create({
   measureMini: { color: '#9CA3AF', fontSize: 10, letterSpacing: 1, fontWeight: '700' },
   measureValue: { color: '#FFB000', fontSize: 22, fontFamily: 'monospace', fontWeight: '800', marginTop: 4 },
   measureAlt: { color: '#6B7280', fontSize: 11, fontFamily: 'monospace', marginTop: 2 },
+
+  engRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 },
+  engLabel: { color: '#F3F4F6', fontSize: 13, fontWeight: '600', flex: 1 },
+  engValue: { color: '#FFB000', fontSize: 18, fontFamily: 'monospace', fontWeight: '700' },
+  engUnit: { color: '#6B7280', fontSize: 12 },
+  engHint: { color: '#9CA3AF', fontSize: 11, fontStyle: 'italic', marginTop: 4, marginBottom: 6 },
 });

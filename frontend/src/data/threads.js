@@ -193,38 +193,75 @@ export const METRIC_THREADS = METRIC_TABLE
   .sort((a, b) => a.sortKey - b.sortKey);
 
 // NPT - National Pipe Thread (Tapered, ANSI/ASME B1.20.1)
-// Sizes ≤ 1" only. NPT has no class system; specs are absolute.
-// Tap drill listed per standard reference.
-const npt = (label, od, tpi, tapDrillName, tapDrillSize, sortKey) => ({
-  id: `NPT-${label}`,
-  system: 'npt',
-  label: `${label} NPT`,
-  diameter: od,
-  pitch: 1 / tpi,
-  tpi,
-  series: 'NPT',
-  tapDrill: { name: tapDrillName, size: tapDrillSize },
-  sortKey,
-});
+// NPTF - Dryseal Pipe Thread (ANSI/ASME B1.20.3) - same physical sizes,
+//        tighter tolerances and slightly smaller tap drill for sealing without
+//        thread sealant.
+// Sizes ≤ 1" only. Pipe threads have no class system; specs are absolute.
+// L1 = hand-tight engagement length, L2 = effective thread length (inches).
 
-export const NPT_THREADS = [
-  npt('1/16-27', 0.3125, 27, 'D / 15/64', 0.2344, 0.0625),
-  npt('1/8-27',  0.4050, 27, 'R / 11/32', 0.3390, 0.1250),
-  npt('1/4-18',  0.5400, 18, '7/16',      0.4375, 0.2500),
-  npt('3/8-18',  0.6750, 18, '37/64',     0.5781, 0.3750),
-  npt('1/2-14',  0.8400, 14, '23/32',     0.7188, 0.5000),
-  npt('3/4-14',  1.0500, 14, '59/64',     0.9219, 0.7500),
-  npt('1-11.5',  1.3150, 11.5, '1-5/32',  1.1563, 1.0000),
-].sort((a, b) => a.sortKey - b.sortKey);
+// Single shared dataset; two exported lists distinguish NPT vs NPTF.
+const PIPE_DATA = [
+  { size: '1/16-27', od: 0.3125, tpi: 27,
+    npt:  { name: 'D / 15/64', size: 0.2344 },
+    nptf: { name: '#1',        size: 0.2280 },
+    L1: 0.1600, L2: 0.2611, sortKey: 0.0625 },
+  { size: '1/8-27', od: 0.4050, tpi: 27,
+    npt:  { name: 'R / 11/32', size: 0.3390 },
+    nptf: { name: 'Q',         size: 0.3320 },
+    L1: 0.1615, L2: 0.2639, sortKey: 0.1250 },
+  { size: '1/4-18', od: 0.5400, tpi: 18,
+    npt:  { name: '7/16',      size: 0.4375 },
+    nptf: { name: '27/64',     size: 0.4219 },
+    L1: 0.2278, L2: 0.4018, sortKey: 0.2500 },
+  { size: '3/8-18', od: 0.6750, tpi: 18,
+    npt:  { name: '37/64',     size: 0.5781 },
+    nptf: { name: '9/16',      size: 0.5625 },
+    L1: 0.2400, L2: 0.4078, sortKey: 0.3750 },
+  { size: '1/2-14', od: 0.8400, tpi: 14,
+    npt:  { name: '23/32',     size: 0.7188 },
+    nptf: { name: '45/64',     size: 0.7031 },
+    L1: 0.3200, L2: 0.5337, sortKey: 0.5000 },
+  { size: '3/4-14', od: 1.0500, tpi: 14,
+    npt:  { name: '59/64',     size: 0.9219 },
+    nptf: { name: '29/32',     size: 0.9063 },
+    L1: 0.3390, L2: 0.5457, sortKey: 0.7500 },
+  { size: '1-11.5', od: 1.3150, tpi: 11.5,
+    npt:  { name: '1-5/32',    size: 1.1563 },
+    nptf: { name: '1-9/64',    size: 1.1406 },
+    L1: 0.4000, L2: 0.6828, sortKey: 1.0000 },
+];
+
+function makePipe(row, system) {
+  const isNPTF = system === 'nptf';
+  const seriesLabel = isNPTF ? 'NPTF' : 'NPT';
+  return {
+    id: `${seriesLabel}-${row.size}`,
+    system,
+    label: `${row.size} ${seriesLabel}`,
+    diameter: row.od,
+    pitch: 1 / row.tpi,
+    tpi: row.tpi,
+    series: seriesLabel,
+    tapDrill: isNPTF ? row.nptf : row.npt,
+    L1: row.L1,
+    L2: row.L2,
+    sortKey: row.sortKey,
+  };
+}
+
+export const NPT_THREADS  = PIPE_DATA.map((r) => makePipe(r, 'npt'));
+export const NPTF_THREADS = PIPE_DATA.map((r) => makePipe(r, 'nptf'));
 
 export function getThreadById(id) {
   return UNIFIED_THREADS.find(t => t.id === id)
     || METRIC_THREADS.find(t => t.id === id)
-    || NPT_THREADS.find(t => t.id === id);
+    || NPT_THREADS.find(t => t.id === id)
+    || NPTF_THREADS.find(t => t.id === id);
 }
 
 export function getThreadsBySystem(system) {
   if (system === 'metric') return METRIC_THREADS;
   if (system === 'npt') return NPT_THREADS;
+  if (system === 'nptf') return NPTF_THREADS;
   return UNIFIED_THREADS;
 }

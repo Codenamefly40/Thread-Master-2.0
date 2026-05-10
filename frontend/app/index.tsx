@@ -74,6 +74,22 @@ export default function Home() {
           </View>
         </Pressable>
 
+        <Pressable
+          testID="system-select-nptf"
+          style={({ pressed }) => [styles.bigCard, pressed && styles.cardPressed]}
+          onPress={() => router.push({ pathname: '/threads', params: { system: 'nptf' } })}
+        >
+          <View style={styles.cardLeft}>
+            <Text style={styles.cardKicker}>DRYSEAL · ASME B1.20.3</Text>
+            <Text style={styles.cardTitle}>NPTF</Text>
+            <Text style={styles.cardDesc}>Sealing pipe thread (no sealant)</Text>
+            <Text style={styles.cardRange}>1/16 to 1&quot;</Text>
+          </View>
+          <View style={styles.cardArrow}>
+            <Ionicons name="chevron-forward" size={32} color="#FFB000" />
+          </View>
+        </Pressable>
+
         <View style={styles.featureRow}>
           <FeatureCell icon="calculator" label="TAP DRILL" />
           <FeatureCell icon="resize" label="3-WIRE" />

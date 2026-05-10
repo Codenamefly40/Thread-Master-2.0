@@ -6,10 +6,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { getThreadsBySystem } from '../src/data/threads';
 
 export default function ThreadsList() {
-  const { system } = useLocalSearchParams<{ system: 'unified' | 'metric' | 'npt' }>();
+  const { system } = useLocalSearchParams<{ system: 'unified' | 'metric' | 'npt' | 'nptf' }>();
   const router = useRouter();
   const [query, setQuery] = useState('');
-  const sys = system === 'metric' ? 'metric' : system === 'npt' ? 'npt' : 'unified';
+  const sys = system === 'metric' ? 'metric'
+    : system === 'npt' ? 'npt'
+    : system === 'nptf' ? 'nptf'
+    : 'unified';
 
   const all = useMemo(() => getThreadsBySystem(sys), [sys]);
 
@@ -26,6 +29,7 @@ export default function ThreadsList() {
     unified: { title: 'UNIFIED THREADS', sub: 'INCH · ASME B1.1', screen: 'Unified', placeholder: 'Search e.g. 1/4-20, #6, UNF' },
     metric:  { title: 'METRIC THREADS',  sub: 'MM · ISO 261/262', screen: 'Metric',  placeholder: 'Search e.g. M6, 1.5, Fine' },
     npt:     { title: 'NPT THREADS',     sub: 'PIPE · ASME B1.20.1', screen: 'NPT',  placeholder: 'Search e.g. 1/4, 3/8, 1/2' },
+    nptf:    { title: 'NPTF THREADS',    sub: 'DRYSEAL · ASME B1.20.3', screen: 'NPTF', placeholder: 'Search e.g. 1/4, 3/8, 1/2' },
   } as const;
   const headerTitle = titleMap[sys].title;
   const headerSub = titleMap[sys].sub;
@@ -76,7 +80,7 @@ export default function ThreadsList() {
                 <Text style={styles.rowMetaText}>{item.series}</Text>
                 <View style={styles.dot} />
                 <Text style={styles.rowMetaText}>
-                  {sys === 'unified' || sys === 'npt'
+                  {sys === 'unified' || sys === 'npt' || sys === 'nptf'
                     ? `${item.tpi} TPI`
                     : `${item.pitch.toFixed(2)} mm pitch`}
                 </Text>
