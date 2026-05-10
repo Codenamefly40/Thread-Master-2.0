@@ -90,6 +90,38 @@ export default function Home() {
           </View>
         </Pressable>
 
+        <Pressable
+          testID="system-select-bspp"
+          style={({ pressed }) => [styles.bigCard, pressed && styles.cardPressed]}
+          onPress={() => router.push({ pathname: '/threads', params: { system: 'bspp' } })}
+        >
+          <View style={styles.cardLeft}>
+            <Text style={styles.cardKicker}>BRITISH PIPE · ISO 228 (G)</Text>
+            <Text style={styles.cardTitle}>BSPP</Text>
+            <Text style={styles.cardDesc}>Parallel pipe thread (G)</Text>
+            <Text style={styles.cardRange}>G 1/16 to G 1</Text>
+          </View>
+          <View style={styles.cardArrow}>
+            <Ionicons name="chevron-forward" size={32} color="#FFB000" />
+          </View>
+        </Pressable>
+
+        <Pressable
+          testID="system-select-bspt"
+          style={({ pressed }) => [styles.bigCard, pressed && styles.cardPressed]}
+          onPress={() => router.push({ pathname: '/threads', params: { system: 'bspt' } })}
+        >
+          <View style={styles.cardLeft}>
+            <Text style={styles.cardKicker}>BRITISH PIPE · ISO 7-1 (R)</Text>
+            <Text style={styles.cardTitle}>BSPT</Text>
+            <Text style={styles.cardDesc}>Tapered pipe thread (R)</Text>
+            <Text style={styles.cardRange}>R 1/16 to R 1</Text>
+          </View>
+          <View style={styles.cardArrow}>
+            <Ionicons name="chevron-forward" size={32} color="#FFB000" />
+          </View>
+        </Pressable>
+
         <View style={styles.featureRow}>
           <FeatureCell icon="calculator" label="TAP DRILL" />
           <FeatureCell icon="resize" label="3-WIRE" />

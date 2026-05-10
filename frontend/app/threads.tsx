@@ -6,12 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { getThreadsBySystem } from '../src/data/threads';
 
 export default function ThreadsList() {
-  const { system } = useLocalSearchParams<{ system: 'unified' | 'metric' | 'npt' | 'nptf' }>();
+  const { system } = useLocalSearchParams<{ system: 'unified' | 'metric' | 'npt' | 'nptf' | 'bspp' | 'bspt' }>();
   const router = useRouter();
   const [query, setQuery] = useState('');
   const sys = system === 'metric' ? 'metric'
     : system === 'npt' ? 'npt'
     : system === 'nptf' ? 'nptf'
+    : system === 'bspp' ? 'bspp'
+    : system === 'bspt' ? 'bspt'
     : 'unified';
 
   const all = useMemo(() => getThreadsBySystem(sys), [sys]);
@@ -30,6 +32,8 @@ export default function ThreadsList() {
     metric:  { title: 'METRIC THREADS',  sub: 'MM · ISO 261/262', screen: 'Metric',  placeholder: 'Search e.g. M6, 1.5, Fine' },
     npt:     { title: 'NPT THREADS',     sub: 'PIPE · ASME B1.20.1', screen: 'NPT',  placeholder: 'Search e.g. 1/4, 3/8, 1/2' },
     nptf:    { title: 'NPTF THREADS',    sub: 'DRYSEAL · ASME B1.20.3', screen: 'NPTF', placeholder: 'Search e.g. 1/4, 3/8, 1/2' },
+    bspp:    { title: 'BSPP THREADS',    sub: 'BRITISH PIPE · ISO 228 (G)', screen: 'BSPP', placeholder: 'Search e.g. G 1/4, G 1/2' },
+    bspt:    { title: 'BSPT THREADS',    sub: 'BRITISH PIPE · ISO 7-1 (R)', screen: 'BSPT', placeholder: 'Search e.g. R 1/4, R 1/2' },
   } as const;
   const headerTitle = titleMap[sys].title;
   const headerSub = titleMap[sys].sub;
@@ -80,9 +84,7 @@ export default function ThreadsList() {
                 <Text style={styles.rowMetaText}>{item.series}</Text>
                 <View style={styles.dot} />
                 <Text style={styles.rowMetaText}>
-                  {sys === 'unified' || sys === 'npt' || sys === 'nptf'
-                    ? `${item.tpi} TPI`
-                    : `${item.pitch.toFixed(2)} mm pitch`}
+                  {sys === 'metric' ? `${item.pitch.toFixed(2)} mm pitch` : `${item.tpi} TPI`}
                 </Text>
                 <View style={styles.dot} />
                 <Text style={styles.rowMetaText}>

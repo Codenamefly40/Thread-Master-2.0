@@ -112,6 +112,74 @@ export default function SpecScreen() {
     );
   }
 
+  // BSPP / BSPT — British Standard Pipe (parallel & taper) per ISO 228 / ISO 7-1
+  if (thread.system === 'bspp' || thread.system === 'bspt') {
+    const bsp = thread as any;
+    const isTaper = thread.system === 'bspt';
+    const standardLabel = isTaper ? 'BRITISH PIPE · ISO 7-1 (R)' : 'BRITISH PIPE · ISO 228 (G)';
+    const titleSub = isTaper ? 'TAPERED' : 'PARALLEL';
+    const tapDrillFooter = isTaper
+      ? 'Per ISO 7-1 — for tapered pipe joints sealed with thread compound or PTFE.'
+      : 'Per ISO 228 — for parallel pipe joints sealed with bonded washer / O-ring.';
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <Stack.Screen options={{ title: thread.label }} />
+        <ScrollView contentContainerStyle={styles.scroll}>
+          <View style={styles.titleBlock}>
+            <Text style={styles.kicker}>{standardLabel} · {titleSub}</Text>
+            <Text style={styles.title}>{thread.label}</Text>
+            <View style={styles.titleMeta}>
+              <MetaItem label="OD" value={`${bsp.diameterMm.toFixed(3)} mm`} />
+              <MetaItem label="TPI" value={`${thread.tpi}`} />
+              <MetaItem label="PITCH" value={`${bsp.pitchMm.toFixed(3)} mm`} />
+            </View>
+          </View>
+
+          <SectionLabel text="Specifications" />
+          <View style={styles.specCard}>
+            <SpecRow label="Outside Dia (OD)" v={bsp.diameterMm} fmt={(n) => fmtMm(n, 3)}
+              alt={fmtIn(thread.diameter, 4)} unit="mm" altUnit="in" />
+            <Divider />
+            <SpecRow label="Threads / Inch" v={thread.tpi} fmt={(n) => n.toString()}
+              alt="—" unit="TPI" altUnit="" />
+            <SpecRow label="Pitch" v={bsp.pitchMm} fmt={(n) => fmtMm(n, 3)}
+              alt={fmtIn(thread.pitch, 4)} unit="mm" altUnit="in" />
+            {isTaper && (
+              <>
+                <Divider />
+                <SpecRow label="Taper" v={0.0625} fmt={() => '1:16 (0.0625"/in)'}
+                  alt="3/4 in/ft" unit="" altUnit="" />
+              </>
+            )}
+            <Divider />
+            <SpecRow label="Thread Form" v={0} fmt={() => '55° Whitworth'}
+              alt="rounded crests/roots" unit="" altUnit="" />
+          </View>
+
+          <SectionLabel text="Tap Drill (Internal Thread)" />
+          <View style={styles.specCard}>
+            <View style={styles.resultBox} testID="bsp-tap-drill">
+              <Text style={styles.resultLabel}>STANDARD TAP DRILL</Text>
+              <Text style={styles.resultValue}>
+                {bsp.tapDrill.sizeMm.toFixed(2)} <Text style={styles.resultUnit}>mm</Text>
+              </Text>
+              <Text style={styles.resultAlt}>
+                {bsp.tapDrill.size.toFixed(4)} in
+              </Text>
+              <View style={styles.closestRow}>
+                <Ionicons name="checkmark-circle" size={16} color="#00E676" />
+                <Text style={styles.closestText}>
+                  Drill name: <Text style={styles.closestStrong}>{bsp.tapDrill.name}</Text>
+                </Text>
+              </View>
+              <Text style={styles.resultFooter}>{tapDrillFooter}</Text>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   const isUnified = thread.system === 'unified';
   const D = thread.diameter;
   const P = thread.pitch;

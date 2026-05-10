@@ -1,22 +1,28 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "Thread Master",
+    "slug": "thread-master",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
+    "scheme": "threadmaster",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.threadmaster.app",
+      "deploymentTarget": "15.1"
     },
     "android": {
+      "package": "com.threadmaster.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "minSdkVersion": 24,
+      "compileSdkVersion": 35,
+      "targetSdkVersion": 35
     },
     "web": {
       "bundler": "metro",
@@ -32,6 +38,19 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#000"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 24,
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
         }
       ]
     ],

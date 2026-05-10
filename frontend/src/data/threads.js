@@ -252,16 +252,87 @@ function makePipe(row, system) {
 export const NPT_THREADS  = PIPE_DATA.map((r) => makePipe(r, 'npt'));
 export const NPTF_THREADS = PIPE_DATA.map((r) => makePipe(r, 'nptf'));
 
+// BSPP (ISO 228 / G threads, parallel) and BSPT (ISO 7-1 / R threads, taper 1:16)
+// Same nominal sizes share OD and TPI. Sizes ≤ 1" only.
+// Tap drill data per common reference (ISO 7-1 Table 4 for BSPT, ISO 228 for BSPP).
+const BSP_DATA = [
+  { size: '1/16', tpi: 28, odMm: 7.723,
+    bsppDrillMm: 6.8, bsppDrillIn: 0.2677, bsppDrillName: '6.8 mm',
+    bsptDrillMm: 6.6, bsptDrillIn: 0.2598, bsptDrillName: '6.6 mm',
+    sortKey: 0.0625 },
+  { size: '1/8',  tpi: 28, odMm: 9.728,
+    bsppDrillMm: 8.8, bsppDrillIn: 0.3465, bsppDrillName: '8.8 mm',
+    bsptDrillMm: 8.7, bsptDrillIn: 0.3425, bsptDrillName: '8.7 mm',
+    sortKey: 0.1250 },
+  { size: '1/4',  tpi: 19, odMm: 13.157,
+    bsppDrillMm: 11.8, bsppDrillIn: 0.4646, bsppDrillName: '11.8 mm',
+    bsptDrillMm: 11.4, bsptDrillIn: 0.4488, bsptDrillName: '11.4 mm',
+    sortKey: 0.2500 },
+  { size: '3/8',  tpi: 19, odMm: 16.662,
+    bsppDrillMm: 15.3, bsppDrillIn: 0.6024, bsppDrillName: '15.3 mm',
+    bsptDrillMm: 14.9, bsptDrillIn: 0.5866, bsptDrillName: '14.9 mm',
+    sortKey: 0.3750 },
+  { size: '1/2',  tpi: 14, odMm: 20.955,
+    bsppDrillMm: 19.0, bsppDrillIn: 0.7480, bsppDrillName: '19.0 mm',
+    bsptDrillMm: 18.6, bsptDrillIn: 0.7323, bsptDrillName: '18.6 mm',
+    sortKey: 0.5000 },
+  { size: '5/8',  tpi: 14, odMm: 22.911,
+    bsppDrillMm: 21.0, bsppDrillIn: 0.8268, bsppDrillName: '21.0 mm',
+    bsptDrillMm: 20.6, bsptDrillIn: 0.8110, bsptDrillName: '20.6 mm',
+    sortKey: 0.6250 },
+  { size: '3/4',  tpi: 14, odMm: 26.441,
+    bsppDrillMm: 24.5, bsppDrillIn: 0.9646, bsppDrillName: '24.5 mm',
+    bsptDrillMm: 24.1, bsptDrillIn: 0.9488, bsptDrillName: '24.1 mm',
+    sortKey: 0.7500 },
+  { size: '7/8',  tpi: 14, odMm: 30.201,
+    bsppDrillMm: 28.3, bsppDrillIn: 1.1142, bsppDrillName: '28.3 mm',
+    bsptDrillMm: 27.9, bsptDrillIn: 1.0984, bsptDrillName: '27.9 mm',
+    sortKey: 0.8750 },
+  { size: '1',    tpi: 11, odMm: 33.249,
+    bsppDrillMm: 30.7, bsppDrillIn: 1.2087, bsppDrillName: '30.7 mm',
+    bsptDrillMm: 30.3, bsptDrillIn: 1.1929, bsptDrillName: '30.3 mm',
+    sortKey: 1.0000 },
+];
+
+function makeBSP(row, system) {
+  const isTaper = system === 'bspt';
+  const seriesLabel = isTaper ? 'BSPT' : 'BSPP';
+  const designation = `${isTaper ? 'R' : 'G'} ${row.size}`;
+  return {
+    id: `${seriesLabel}-${row.size}`,
+    system,
+    label: `${designation}  ·  ${row.size}-${row.tpi}`,
+    diameter: row.odMm / 25.4,        // store in inches for consistency
+    diameterMm: row.odMm,
+    pitch: 1 / row.tpi,
+    pitchMm: 25.4 / row.tpi,
+    tpi: row.tpi,
+    series: seriesLabel,
+    tapDrill: isTaper
+      ? { name: row.bsptDrillName, size: row.bsptDrillIn, sizeMm: row.bsptDrillMm }
+      : { name: row.bsppDrillName, size: row.bsppDrillIn, sizeMm: row.bsppDrillMm },
+    isTaper,
+    sortKey: row.sortKey,
+  };
+}
+
+export const BSPP_THREADS = BSP_DATA.map((r) => makeBSP(r, 'bspp'));
+export const BSPT_THREADS = BSP_DATA.map((r) => makeBSP(r, 'bspt'));
+
 export function getThreadById(id) {
   return UNIFIED_THREADS.find(t => t.id === id)
     || METRIC_THREADS.find(t => t.id === id)
     || NPT_THREADS.find(t => t.id === id)
-    || NPTF_THREADS.find(t => t.id === id);
+    || NPTF_THREADS.find(t => t.id === id)
+    || BSPP_THREADS.find(t => t.id === id)
+    || BSPT_THREADS.find(t => t.id === id);
 }
 
 export function getThreadsBySystem(system) {
   if (system === 'metric') return METRIC_THREADS;
   if (system === 'npt') return NPT_THREADS;
   if (system === 'nptf') return NPTF_THREADS;
+  if (system === 'bspp') return BSPP_THREADS;
+  if (system === 'bspt') return BSPT_THREADS;
   return UNIFIED_THREADS;
 }
