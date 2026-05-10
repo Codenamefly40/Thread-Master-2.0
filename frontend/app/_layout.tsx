@@ -17,6 +17,7 @@ export default function RootLayout() {
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="threads" options={{ title: 'Select Thread' }} />
+        <Stack.Screen name="pipe" options={{ title: 'Pipe Threads' }} />
         <Stack.Screen name="spec" options={{ title: 'Thread Spec' }} />
       </Stack>
     </SafeAreaProvider>

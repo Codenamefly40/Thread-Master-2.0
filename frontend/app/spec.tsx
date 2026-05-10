@@ -70,6 +70,13 @@ export default function SpecScreen() {
             <Divider />
             <SpecRow label="Taper" v={0.0625} fmt={() => '1:16 (0.0625"/in)'}
               alt="3/4 in/ft" unit="" altUnit="" />
+            <Divider />
+            <SpecRow
+              label={isNPTF ? 'Tap Drill (NPTF)' : 'Tap Drill (NPT)'}
+              v={npt.tapDrill.size} fmt={(n) => fmtIn(n, 4)}
+              alt={`${npt.tapDrill.name}`} unit="in" altUnit=""
+              highlight
+            />
           </View>
 
           <SectionLabel text="Engagement Lengths" />

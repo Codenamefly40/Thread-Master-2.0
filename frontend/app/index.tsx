@@ -1,7 +1,37 @@
-import { Text, View, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import { Text, View, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+
+const SYSTEMS = [
+  {
+    id: 'unified',
+    kicker: 'INCH · ASME B1.1',
+    title: 'UNIFIED',
+    desc: 'UNC · UNF · UNEF · UNS',
+    range: '#0-80 to 1"-8',
+    route: { pathname: '/threads', params: { system: 'unified' } },
+    icon: 'resize' as const,
+  },
+  {
+    id: 'metric',
+    kicker: 'MM · ISO 261/262',
+    title: 'METRIC',
+    desc: 'Coarse · Fine · Extra Fine · Super Fine',
+    range: 'M1 to M25',
+    route: { pathname: '/threads', params: { system: 'metric' } },
+    icon: 'magnet' as const,
+  },
+  {
+    id: 'pipe',
+    kicker: 'PIPE · ASME · ISO',
+    title: 'PIPE',
+    desc: 'NPT · NPTF · BSPP · BSPT',
+    range: '1/16" to 1" / G · R',
+    route: { pathname: '/pipe' },
+    icon: 'git-branch' as const,
+  },
+];
 
 export default function Home() {
   const router = useRouter();
@@ -23,104 +53,32 @@ export default function Home() {
       <View style={styles.body}>
         <Text style={styles.h1}>Select System</Text>
         <Text style={styles.subtitle}>
-          Choose the thread system you&apos;re working with. All specs are computed per ASME B1.1 / ISO 261.
+          Choose a thread system. All specs are computed per ASME B1.1 / ISO 261 / ASME B1.20.1.
         </Text>
 
-        <Pressable
-          testID="system-select-unified"
-          style={({ pressed }) => [styles.bigCard, pressed && styles.cardPressed]}
-          onPress={() => router.push({ pathname: '/threads', params: { system: 'unified' } })}
-        >
-          <View style={styles.cardLeft}>
-            <Text style={styles.cardKicker}>INCH · ASME B1.1</Text>
-            <Text style={styles.cardTitle}>UNIFIED</Text>
-            <Text style={styles.cardDesc}>UNC · UNF · UNEF · UNS</Text>
-            <Text style={styles.cardRange}>#0-80 to 1&quot;-8</Text>
-          </View>
-          <View style={styles.cardArrow}>
-            <Ionicons name="chevron-forward" size={32} color="#FFB000" />
-          </View>
-        </Pressable>
-
-        <Pressable
-          testID="system-select-metric"
-          style={({ pressed }) => [styles.bigCard, pressed && styles.cardPressed]}
-          onPress={() => router.push({ pathname: '/threads', params: { system: 'metric' } })}
-        >
-          <View style={styles.cardLeft}>
-            <Text style={styles.cardKicker}>MM · ISO 261/262</Text>
-            <Text style={styles.cardTitle}>METRIC</Text>
-            <Text style={styles.cardDesc}>Coarse · Fine · Extra Fine · Super Fine</Text>
-            <Text style={styles.cardRange}>M1 to M25</Text>
-          </View>
-          <View style={styles.cardArrow}>
-            <Ionicons name="chevron-forward" size={32} color="#FFB000" />
-          </View>
-        </Pressable>
-
-        <Pressable
-          testID="system-select-npt"
-          style={({ pressed }) => [styles.bigCard, pressed && styles.cardPressed]}
-          onPress={() => router.push({ pathname: '/threads', params: { system: 'npt' } })}
-        >
-          <View style={styles.cardLeft}>
-            <Text style={styles.cardKicker}>PIPE · ASME B1.20.1</Text>
-            <Text style={styles.cardTitle}>NPT</Text>
-            <Text style={styles.cardDesc}>Tapered National Pipe Thread</Text>
-            <Text style={styles.cardRange}>1/16 to 1&quot;</Text>
-          </View>
-          <View style={styles.cardArrow}>
-            <Ionicons name="chevron-forward" size={32} color="#FFB000" />
-          </View>
-        </Pressable>
-
-        <Pressable
-          testID="system-select-nptf"
-          style={({ pressed }) => [styles.bigCard, pressed && styles.cardPressed]}
-          onPress={() => router.push({ pathname: '/threads', params: { system: 'nptf' } })}
-        >
-          <View style={styles.cardLeft}>
-            <Text style={styles.cardKicker}>DRYSEAL · ASME B1.20.3</Text>
-            <Text style={styles.cardTitle}>NPTF</Text>
-            <Text style={styles.cardDesc}>Sealing pipe thread (no sealant)</Text>
-            <Text style={styles.cardRange}>1/16 to 1&quot;</Text>
-          </View>
-          <View style={styles.cardArrow}>
-            <Ionicons name="chevron-forward" size={32} color="#FFB000" />
-          </View>
-        </Pressable>
-
-        <Pressable
-          testID="system-select-bspp"
-          style={({ pressed }) => [styles.bigCard, pressed && styles.cardPressed]}
-          onPress={() => router.push({ pathname: '/threads', params: { system: 'bspp' } })}
-        >
-          <View style={styles.cardLeft}>
-            <Text style={styles.cardKicker}>BRITISH PIPE · ISO 228 (G)</Text>
-            <Text style={styles.cardTitle}>BSPP</Text>
-            <Text style={styles.cardDesc}>Parallel pipe thread (G)</Text>
-            <Text style={styles.cardRange}>G 1/16 to G 1</Text>
-          </View>
-          <View style={styles.cardArrow}>
-            <Ionicons name="chevron-forward" size={32} color="#FFB000" />
-          </View>
-        </Pressable>
-
-        <Pressable
-          testID="system-select-bspt"
-          style={({ pressed }) => [styles.bigCard, pressed && styles.cardPressed]}
-          onPress={() => router.push({ pathname: '/threads', params: { system: 'bspt' } })}
-        >
-          <View style={styles.cardLeft}>
-            <Text style={styles.cardKicker}>BRITISH PIPE · ISO 7-1 (R)</Text>
-            <Text style={styles.cardTitle}>BSPT</Text>
-            <Text style={styles.cardDesc}>Tapered pipe thread (R)</Text>
-            <Text style={styles.cardRange}>R 1/16 to R 1</Text>
-          </View>
-          <View style={styles.cardArrow}>
-            <Ionicons name="chevron-forward" size={32} color="#FFB000" />
-          </View>
-        </Pressable>
+        <View style={styles.cardStack}>
+          {SYSTEMS.map((sys) => (
+            <Pressable
+              key={sys.id}
+              testID={`system-select-${sys.id}`}
+              style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+              onPress={() => router.push(sys.route as any)}
+            >
+              <View style={styles.iconCol}>
+                <Ionicons name={sys.icon} size={28} color="#FFB000" />
+              </View>
+              <View style={styles.cardCenter}>
+                <Text style={styles.cardKicker}>{sys.kicker}</Text>
+                <Text style={styles.cardTitle}>{sys.title}</Text>
+                <Text style={styles.cardDesc}>{sys.desc}</Text>
+                <Text style={styles.cardRange}>{sys.range}</Text>
+              </View>
+              <View style={styles.cardArrow}>
+                <Ionicons name="chevron-forward" size={28} color="#FFB000" />
+              </View>
+            </Pressable>
+          ))}
+        </View>
 
         <View style={styles.featureRow}>
           <FeatureCell icon="calculator" label="TAP DRILL" />
@@ -147,33 +105,49 @@ function FeatureCell({ icon, label }: { icon: any; label: string }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0A0A0A' },
-  header: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)' },
+  header: {
+    paddingHorizontal: 20, paddingTop: 8, paddingBottom: 16,
+    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)',
+  },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   logoBox: { width: 40, height: 40, backgroundColor: '#FFB000', alignItems: 'center', justifyContent: 'center', borderRadius: 4 },
   brandTitle: { color: '#F3F4F6', fontSize: 16, fontWeight: '800', letterSpacing: 2 },
   brandSub: { color: '#9CA3AF', fontSize: 11, letterSpacing: 1.5, marginTop: 2 },
   body: { flex: 1, padding: 20, gap: 14 },
   h1: { color: '#F3F4F6', fontSize: 32, fontWeight: '800', letterSpacing: -0.5, marginTop: 8 },
-  subtitle: { color: '#9CA3AF', fontSize: 14, lineHeight: 20, marginBottom: 12 },
-  bigCard: {
+  subtitle: { color: '#9CA3AF', fontSize: 14, lineHeight: 20, marginBottom: 8 },
+  cardStack: { gap: 14, flex: 1 },
+  card: {
+    flex: 1,
     backgroundColor: '#171717',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.12)',
     borderRadius: 6,
-    padding: 22,
+    padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 120,
+    minHeight: 130,
   },
   cardPressed: { backgroundColor: '#262626', borderColor: '#FFB000' },
-  cardLeft: { flex: 1, gap: 4 },
-  cardKicker: { color: '#FFB000', fontSize: 11, letterSpacing: 1.5, fontWeight: '700' },
-  cardTitle: { color: '#F3F4F6', fontSize: 28, fontWeight: '800', letterSpacing: 1, marginTop: 4 },
-  cardDesc: { color: '#F3F4F6', fontSize: 14, marginTop: 6 },
-  cardRange: { color: '#9CA3AF', fontSize: 13, fontFamily: 'monospace', marginTop: 4 },
-  cardArrow: { paddingLeft: 12 },
-  featureRow: { flexDirection: 'row', gap: 10, marginTop: 8 },
-  featCell: { flex: 1, backgroundColor: '#171717', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 4, paddingVertical: 14, alignItems: 'center', gap: 6 },
+  iconCol: {
+    width: 56, height: 56, borderRadius: 4,
+    backgroundColor: 'rgba(255,176,0,0.08)',
+    borderWidth: 1, borderColor: 'rgba(255,176,0,0.25)',
+    alignItems: 'center', justifyContent: 'center',
+    marginRight: 16,
+  },
+  cardCenter: { flex: 1, gap: 3 },
+  cardKicker: { color: '#FFB000', fontSize: 10, letterSpacing: 1.4, fontWeight: '700' },
+  cardTitle: { color: '#F3F4F6', fontSize: 26, fontWeight: '800', letterSpacing: 1, marginTop: 4 },
+  cardDesc: { color: '#F3F4F6', fontSize: 13, marginTop: 4 },
+  cardRange: { color: '#9CA3AF', fontSize: 12, fontFamily: 'monospace', marginTop: 2 },
+  cardArrow: { paddingLeft: 8 },
+  featureRow: { flexDirection: 'row', gap: 10, marginTop: 4 },
+  featCell: {
+    flex: 1, backgroundColor: '#171717',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 4,
+    paddingVertical: 14, alignItems: 'center', gap: 6,
+  },
   featLabel: { color: '#9CA3AF', fontSize: 11, fontWeight: '700', letterSpacing: 1.2 },
   footer: { paddingVertical: 12, alignItems: 'center' },
   footerText: { color: '#6B7280', fontSize: 11, letterSpacing: 1.5, fontWeight: '600' },
