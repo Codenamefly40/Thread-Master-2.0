@@ -14,7 +14,7 @@ export default function Home() {
             <Ionicons name="construct" size={22} color="#0A0A0A" />
           </View>
           <View>
-            <Text style={styles.brandTitle}>THREAD REFERENCE</Text>
+            <Text style={styles.brandTitle}>THREAD MASTER</Text>
             <Text style={styles.brandSub}>MACHINIST EDITION · v1.0</Text>
           </View>
         </View>

@@ -1,4 +1,4 @@
-# Thread Reference – Machinist Edition
+# Thread Master – Machinist Edition
 
 ## Overview
 Offline mobile reference app for machinists who cut threads frequently. Provides full Unified and Metric thread spec data with class-based tolerances, tap drill calculations, and 3-wire over-wire measurement.
