@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Pressable } from 'react-native';
+import { Text, View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -50,7 +50,11 @@ export default function Home() {
         </View>
       </View>
 
-      <View style={styles.body}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.body}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.h1}>Select System</Text>
         <Text style={styles.subtitle}>
           Choose a thread system. All specs are computed per ASME B1.1 / ISO 261 / ASME B1.20.1.
@@ -85,7 +89,7 @@ export default function Home() {
           <FeatureCell icon="resize" label="3-WIRE" />
           <FeatureCell icon="layers" label="ALL CLASSES" />
         </View>
-      </View>
+      </ScrollView>
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>OFFLINE · NO ACCOUNT REQUIRED</Text>
@@ -113,12 +117,12 @@ const styles = StyleSheet.create({
   logoBox: { width: 40, height: 40, backgroundColor: '#FFB000', alignItems: 'center', justifyContent: 'center', borderRadius: 4 },
   brandTitle: { color: '#F3F4F6', fontSize: 16, fontWeight: '800', letterSpacing: 2 },
   brandSub: { color: '#9CA3AF', fontSize: 11, letterSpacing: 1.5, marginTop: 2 },
-  body: { flex: 1, padding: 20, gap: 14 },
+  body: { padding: 20, gap: 14, paddingBottom: 32 },
+  scroll: { flex: 1 },
   h1: { color: '#F3F4F6', fontSize: 32, fontWeight: '800', letterSpacing: -0.5, marginTop: 8 },
   subtitle: { color: '#9CA3AF', fontSize: 14, lineHeight: 20, marginBottom: 8 },
-  cardStack: { gap: 14, flex: 1 },
+  cardStack: { gap: 14 },
   card: {
-    flex: 1,
     backgroundColor: '#171717',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.12)',
