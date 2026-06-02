@@ -129,15 +129,13 @@ export function classLimits(thread, cls) {
   }
 }
 
-// Tap drill calculation
-// percent: 50..75 (% of thread)
+// Tap drill calculation (per theoreticalmachinist.com / industry standard)
+// percent: 50..75 (% of thread engagement)
 // type: 'cutting' or 'forming'
-// For cutting: drill = D − (% / 76.98) × (1.0825 × P)  [≈ D - %·P·1.0825/100 with 76.98 normalizer? Use direct formula]
-// Use direct: thread height engaged h_eng = (% / 100) × (5/8) × H × 2 = (% / 100) × 1.0825 × P
-// drill = D − (% / 100) × 1.0825 × P
-// For forming (roll) tap: drill = D − (% / 100) × 0.5413 × P
+// Cutting tap:  drill = D − (% / 100) × 1.2987 × P     (≡ D − P·% / 76.98)
+// Forming tap:  drill = D − (% / 100) × 0.6800 × P     (≡ D − P·% / 147.06)
 export function tapDrill(D, P, percent, type) {
-  const factor = type === 'forming' ? 0.5413 : 1.0825;
+  const factor = type === 'forming' ? 0.6800 : 1.2987;
   return D - (percent / 100) * factor * P;
 }
 
@@ -146,7 +144,9 @@ export function tapDrill(D, P, percent, type) {
 // Acceptable range per ASME B1.2 / Machinery's Handbook:
 //   Min usable wire = 0.560 × P (rides slightly above pitch line)
 //   Max usable wire = 0.900 × P (still below the major dia crest)
-// M = E + 3W − 1.5155 × P    where E = pitch dia, W = wire size, P = pitch
+// M = E + W·(1 + csc(α/2)) − (P/2)·cot(α/2)   for α = 60° (UN, M):
+//   csc(30°) = 2,  cot(30°) = √3 ≈ 1.7321
+//   → M = E + 3W − 0.8660·P
 export function bestWireSize(P) {
   return 0.57735 * P;
 }
@@ -157,7 +157,7 @@ export function maxWireSize(P) {
   return 0.900 * P;
 }
 export function threeWireM(E, W, P) {
-  return E + 3 * W - 1.5155 * P;
+  return E + 3 * W - 0.8660 * P;
 }
 
 // Find closest fractional or numbered drill (Unified) for a target diameter (inches)
