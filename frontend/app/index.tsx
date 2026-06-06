@@ -45,7 +45,7 @@ export default function Home() {
           </View>
           <View>
             <Text style={styles.brandTitle}>THREAD MASTER</Text>
-            <Text style={styles.brandSub}>MACHINIST EDITION · v1.0</Text>
+            <Text style={styles.brandSub}>MACHINIST EDITION · v2.0</Text>
           </View>
         </View>
       </View>
