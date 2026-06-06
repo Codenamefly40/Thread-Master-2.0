@@ -68,9 +68,6 @@ export default function Home() {
               style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
               onPress={() => router.push(sys.route as any)}
             >
-              <View style={styles.iconCol}>
-                <Ionicons name={sys.icon} size={28} color="#FFB000" />
-              </View>
               <View style={styles.cardCenter}>
                 <Text style={styles.cardKicker}>{sys.kicker}</Text>
                 <Text style={styles.cardTitle}>{sys.title}</Text>
