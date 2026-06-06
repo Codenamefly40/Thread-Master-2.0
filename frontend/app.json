@@ -11,10 +11,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.threadmaster.app",
-      "deploymentTarget": "15.1"
+      "deploymentTarget": "15.1",
+      "buildNumber": "2"
     },
     "android": {
       "package": "com.threadmaster.app",
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000"
