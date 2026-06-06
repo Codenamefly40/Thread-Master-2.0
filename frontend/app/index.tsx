@@ -83,12 +83,6 @@ export default function Home() {
             </Pressable>
           ))}
         </View>
-
-        <View style={styles.featureRow}>
-          <FeatureCell icon="calculator" label="TAP DRILL" />
-          <FeatureCell icon="resize" label="3-WIRE" />
-          <FeatureCell icon="layers" label="ALL CLASSES" />
-        </View>
       </ScrollView>
 
       <View style={styles.footer}>
